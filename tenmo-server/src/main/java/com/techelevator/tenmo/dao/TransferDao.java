@@ -7,10 +7,11 @@ import java.util.List;
 
 public interface TransferDao {
         // (Corresponds to 5 in README -- can see transfers sent or received)
-    List<Transfer> getAllTransfers();
+    List<Transfer> getAllTransfers(long accountID);
+
 
         // (Corresponds to 6 in README -- retrieve details on any transfer with transferID)
-    long getTransferByID();
+    Transfer getTransferByID(long transferID);
 
         // (Corresponds to 4 in README -- send a transfer with amount TO user)
     long accountTo();
