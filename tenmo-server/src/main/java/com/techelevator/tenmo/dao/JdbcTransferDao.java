@@ -36,7 +36,19 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
 
     @Override
     public Transfer getTransferById(long transferID) {
-        return null;
+
+        Transfer transfer = null;
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount" +
+                "FROM transfer" +
+                "WHERE transfer_id = ?;";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferID);
+        if(results.next()) {
+            transfer = mapRowToTransfer(results);
+        } else {
+//            throw new TransferNotFoundException();
+        }
+        return transfer;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
