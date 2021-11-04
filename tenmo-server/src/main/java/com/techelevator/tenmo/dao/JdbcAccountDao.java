@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+
 import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -15,28 +16,54 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account getBalance(long accountID) {
-       Account account = null;
-       String sql = "SELECT account_id, user_id, balance " +
-               "FROM accounts " +
-               "WHERE account_id = ?;";
+    public Account getAccountById(long accountId) {
+        Account account = null;
+        String sql = "SELECT * FROM accounts " + "WHERE account_id = ?;";
 
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountID);
+
+        SqlRowSet results = null;
+        results = jdbcTemplate.queryForRowSet(sql, accountId);
         if (results.next()) {
             account = mapRowToAccount(results);
-
         }
+
         return account;
+
     }
 
     @Override
-    public Account increaseBalance(long accountID) {
-        return null;
+    public BigDecimal getBalance(long accountID) {
+        BigDecimal balance = null;
+        String sql = "SELECT balance " +
+                "FROM accounts " +
+                "WHERE account_id = ?;";
+
+        SqlRowSet results = null;
+        results = jdbcTemplate.queryForRowSet(sql, accountID);
+        if (results.next()) {
+            balance = results.getBigDecimal("balance");
+        }
+
+        return balance;
+    }
+
+    public BigDecimal increaseBalance(BigDecimal addMoney, long accountId) {
+        Account account = getAccountById(accountId);
+        BigDecimal newBalance = account.getBalance().add(addMoney);
+        String sql = "UPDATE accounts SET balance = ? "
+                + "WHERE account_id = ?;";
+        jdbcTemplate.update(sql, newBalance, accountId);
+        return account.getBalance();
     }
 
     @Override
-    public Account decreaseBalance(long accountID) {
-        return null;
+    public BigDecimal decreaseBalance(BigDecimal subtractMoney,long accountID) {
+        Account account = getAccountById(accountID);
+        BigDecimal newBalance = account.getBalance().subtract(subtractMoney);
+        String sql = "UPDATE accounts SET balance = ? "
+                + "WHERE account_id = ?;";
+        jdbcTemplate.update(sql, newBalance, accountID);
+        return account.getBalance();
     }
 
     private Account mapRowToAccount(SqlRowSet rowSet) {
@@ -48,3 +75,4 @@ public class JdbcAccountDao implements AccountDao {
     }
 
 }
+
