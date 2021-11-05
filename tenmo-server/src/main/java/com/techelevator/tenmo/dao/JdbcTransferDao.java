@@ -56,15 +56,49 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         }
         return transfer;
     }
+    @Override
+    public int sendingMoneyTo(long userID, BigDecimal amount) {
+        Transfer transfer = null;
+        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (DEFAULT, 2, 1, ?, ?, ?);";
 
-    @Override
-public Transfer sendingMoneyTo(long userID, BigDecimal amount) {
-return null;
-}
-    @Override
-    public Transfer receivingMoneyFrom(long userID, BigDecimal amount) {
-return null;
+        return jdbcTemplate.update(sql, userID, amount);
+
     }
+    @Override
+    public int receivingMoneyFrom(long userID, BigDecimal amount) {
+        Transfer transfer = null;
+        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (DEFAULT, 1, 1, ?, ?, ?);";
+
+        return jdbcTemplate.update(sql, userID, amount);
+    }
+    @Override
+    public List<Transfer> pendingRequests(long transferID) {
+        List<Transfer> requests = new ArrayList<>();
+        String sql = "SELECT t.transfer_id, r.username AS receiver, ts.transfer_status_desc, t.amount " +
+                "FROM transfers t " +
+                "JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id " +
+                "JOIN accounts a ON a.account_id = t.account_from " +
+                "JOIN users r ON  a.account_id = r.user_id " +
+                "WHERE ts.transfer_status_id = 1 AND t.transfer_id = ?;";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            Transfer getAllPendingRequests = mapRowToTransfer(results);
+            requests.add(getAllPendingRequests);
+        }
+        return requests;
+    }
+
+//    @Override
+//public Transfer sendingMoneyTo(long userID, BigDecimal amount) {
+//return null;
+//}
+//    @Override
+//    public Transfer receivingMoneyFrom(long userID, BigDecimal amount) {
+//return null;
+//    }
 
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
