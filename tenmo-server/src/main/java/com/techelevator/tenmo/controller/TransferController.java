@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,42 +14,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@PreAuthorize("isAuthenticated()")
 public class TransferController {
 
     @Autowired
-    private TransferDao dao;
+    private TransferDao transferDao;
 
-    public TransferController(TransferDao dao) {
-        this.dao = dao;
+    public TransferController(TransferDao transferDao) {
+        this.transferDao = transferDao;
     }
 
-    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.GET)
+    @RequestMapping( path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
     public List<Transfer> lists(@PathVariable int id) {
-        List<Transfer> results = dao.getAllTransfers(id);
+        List<Transfer> results = transferDao.getAllTransfers(id);
 
         return results;
     }
 
-    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.GET)
+    @RequestMapping( path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
     public Transfer getTransfer(@PathVariable int id) {
-        Transfer transfer = dao.getTransferById(id);
+        Transfer transfer = transferDao.getTransferById(id);
         return transfer;
     }
 
 
-    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.PUT)
+    @RequestMapping( path = "/transfers/sending/{id}", method = RequestMethod.PUT)
     public int update(@PathVariable long id, @RequestBody BigDecimal amount){
-        return dao.sendingMoneyTo(id, amount);
+        return transferDao.sendingMoneyTo(id, amount);
     }
 
-    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.PUT)
+    @RequestMapping( path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
     public int update2(@PathVariable long id, @RequestBody BigDecimal amount){
-        return dao.receivingMoneyFrom(id, amount);
+        return transferDao.receivingMoneyFrom(id, amount);
     }
 
-    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.GET)
+    @RequestMapping( path = "/transfers/pending/{id}", method = RequestMethod.GET)
     public List<Transfer> list (@PathVariable long id) {
-        List<Transfer> results = dao.pendingRequests(id);
+        List<Transfer> results = transferDao.pendingRequests(id);
 
         return results;
     }
