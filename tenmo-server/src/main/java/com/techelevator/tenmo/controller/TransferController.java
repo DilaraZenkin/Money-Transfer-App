@@ -36,11 +36,12 @@ public class TransferController {
     }
 
 
-    @RequestMapping( path = "/transfers", method = RequestMethod.PUT)
+    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.PUT)
     public int update(@PathVariable long id, @RequestBody BigDecimal amount){
         return dao.sendingMoneyTo(id, amount);
     }
-    @RequestMapping( path = "/transfers", method = RequestMethod.PUT)
+
+    @RequestMapping( path = "/transfers/{id}", method = RequestMethod.PUT)
     public int update2(@PathVariable long id, @RequestBody BigDecimal amount){
         return dao.receivingMoneyFrom(id, amount);
     }
