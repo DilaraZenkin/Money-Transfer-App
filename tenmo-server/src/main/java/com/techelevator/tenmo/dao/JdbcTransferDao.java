@@ -38,9 +38,15 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     public Transfer getTransferById(long transferID) {
 
         Transfer transfer = null;
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount" +
-                "FROM transfer" +
-                "WHERE transfer_id = ?;";
+        String sql = " SELECT t.transfer_id, s.username AS sender, r.username AS receiver, tt.transfer_type_desc, ts.transfer_status_desc, t.amount " +
+                " FROM transfers t " +
+                " JOIN transfer_types tt ON t.transfer_type_id = tt.transfer_type_id " +
+                " JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id " +
+                " JOIN accounts a ON a.account_id = t.account_from " +
+                " JOIN users r ON  a.account_id = r.user_id " +
+                " JOIN accounts b ON b.account_id = t.account_to " +
+                " JOIN users s ON b.account_id = s.user_id " +
+                " WHERE transfer_id = ?;";
 
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferID);
         if(results.next()) {
@@ -50,6 +56,16 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         }
         return transfer;
     }
+
+    @Override
+public Transfer sendingMoneyTo(long userID, BigDecimal amount) {
+return null;
+}
+    @Override
+    public Transfer receivingMoneyFrom(long userID, BigDecimal amount) {
+return null;
+    }
+
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
     Transfer transfer = new Transfer();

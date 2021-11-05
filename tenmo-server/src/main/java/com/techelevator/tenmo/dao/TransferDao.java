@@ -13,11 +13,11 @@ public interface TransferDao {
         // (Corresponds to 6 in README -- retrieve details on any transfer with transferID)
     //long getTransferByID();
 
-        // (Corresponds to 4 in README -- send a transfer with amount TO user)
-    //long accountTo();
+    //(Corresponds to 4 in README -- send a transfer with amount TO user)
+    Transfer sendingMoneyTo(long userID, BigDecimal amount );
 
-        // receive a transfer FROM user
-    //long accountFrom();
+        // receive a transfer FROM user (Use case-7)
+    Transfer receivingMoneyFrom(long userID, BigDecimal amount);
 
         // amount to transfer
    // BigDecimal amount();
