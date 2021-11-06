@@ -15,14 +15,15 @@ public interface TransferDao {
     Transfer getTransferById(long transferID);
 
     //(Corresponds to 4 in README -- send a transfer with amount TO user)
-    int sendingMoneyTo(long userID, BigDecimal amount );
+    int sendingMoneyTo(long accountFrom, long accountTo, BigDecimal amount);
 
     // receive a transfer FROM user (Use case-7)
-    int receivingMoneyFrom(long userID, BigDecimal amount);
+    int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount);
 
     // pending requests (Use case 8)
     List<Transfer> pendingRequests(long transferID);
 
     // UPDATE pending request (use case 9)
     boolean updatePendingRequests(int option);
+
 }

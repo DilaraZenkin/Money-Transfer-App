@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
 public class TransferController {
 
     @Autowired
@@ -23,14 +22,14 @@ public class TransferController {
     public TransferController(TransferDao transferDao) {
         this.transferDao = transferDao;
     }
-
+    // works in Postman
     @RequestMapping( path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
     public List<Transfer> lists(@PathVariable int id) {
         List<Transfer> results = transferDao.getAllTransfers(id);
 
         return results;
     }
-
+    // 200 OK in Postman but no data shown
     @RequestMapping( path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
     public Transfer getTransfer(@PathVariable int id) {
         Transfer transfer = transferDao.getTransferById(id);
@@ -39,13 +38,14 @@ public class TransferController {
 
 
     @RequestMapping( path = "/transfers/sending/{id}", method = RequestMethod.PUT)
-    public int update(@PathVariable long id, @RequestBody BigDecimal amount){
-        return transferDao.sendingMoneyTo(id, amount);
+    public void update(@RequestBody Transfer transfer){
+       // return transferDao.sendingMoneyTo(id, amount);
+        transferDao.sendingMoneyTo(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
     }
 
     @RequestMapping( path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
-    public int update2(@PathVariable long id, @RequestBody BigDecimal amount){
-        return transferDao.receivingMoneyFrom(id, amount);
+    public void update2(@RequestBody Transfer transfer){
+        transferDao.receivingMoneyFrom(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
     }
 
     @RequestMapping( path = "/transfers/pending/{id}", method = RequestMethod.GET)
