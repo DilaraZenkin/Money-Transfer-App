@@ -24,5 +24,5 @@ public interface TransferDao {
     List<Transfer> pendingRequests(long transferID);
 
     // UPDATE pending request (use case 9)
-    String updatePendingRequests(long transferStatusID, int option);
+    boolean updatePendingRequests(int option);
 }
