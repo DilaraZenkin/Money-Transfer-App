@@ -74,7 +74,7 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (DEFAULT, 1, 1, ?, ?, ?);";
 
-        return jdbcTemplate.update(sql, userID, amount);
+     return jdbcTemplate.update(sql, userID, amount);
     }
     @Override
     public List<Transfer> pendingRequests(long transferID) {
