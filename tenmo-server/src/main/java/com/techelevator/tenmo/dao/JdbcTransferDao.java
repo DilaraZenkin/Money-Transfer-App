@@ -93,6 +93,33 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         }
         return requests;
     }
+    @Override
+    public String updatePendingRequests(long transferStatusID, int option) {
+        // 1 == Pending in DB
+
+    if (option == 1) {
+            String sql = "UPDATE transfer_statuses " +
+                    "SET transfer_status_id " +
+                    "WHERE transfer_status_id = 1;";
+        // 2 == Approved in DB
+         jdbcTemplate.update(sql, transferStatusID, option);
+        return "Pending";
+    } else if (option == 2) {
+            String sql = "UPDATE transfer_statuses " +
+                    "SET transfer_status_id " +
+                    "WHERE transfer_status_id = 2;";
+            jdbcTemplate.update(sql, transferStatusID, option);
+            return "Update Successful -- Approved";
+        // 3 == Rejected in DB
+    } else if (option == 3) {
+            String sql = "UPDATE transfer_statuses " +
+                    "SET transfer_status_id " +
+                    "WHERE transfer_status_id = 3;";
+            jdbcTemplate.update(sql, transferStatusID, option);
+            return "Update Successful -- Rejected";
+        }
+        return "Pending";
+    }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
     Transfer transfer = new Transfer();

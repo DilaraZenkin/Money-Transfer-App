@@ -1,11 +1,13 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface TransferDao {
+
     // (Corresponds to 5 in README -- can see transfers sent or received)
     List<Transfer> getAllTransfers(long accountID);
 
@@ -18,6 +20,9 @@ public interface TransferDao {
     // receive a transfer FROM user (Use case-7)
     int receivingMoneyFrom(long userID, BigDecimal amount);
 
-    // pending requests (Use case 8 & 9)
+    // pending requests (Use case 8)
     List<Transfer> pendingRequests(long transferID);
+
+    // UPDATE pending request (use case 9)
+    String updatePendingRequests(long transferStatusID, int option);
 }
