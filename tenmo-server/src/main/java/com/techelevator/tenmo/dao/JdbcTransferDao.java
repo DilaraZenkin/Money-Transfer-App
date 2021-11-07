@@ -25,8 +25,9 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     @Override
     public List<Transfer> getAllTransfers(long accountID) {
     List<Transfer> transferList = new ArrayList<>();
-    String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount "
-            + "FROM transfers " + "JOIN accounts ON transfers.account_from = accounts.account.id " +
+    String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+            "FROM transfers " +
+            "JOIN accounts ON transfers.account_from = accounts.account_id " +
             "WHERE account_to = account_id OR account_from = account_id;";
 
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
@@ -41,7 +42,7 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     public Transfer getTransferById(long transferID) {
 
         Transfer transfer = null;
-        String sql = " SELECT t.transfer_id, s.username AS sender, r.username AS receiver, tt.transfer_type_desc, ts.transfer_status_desc, t.amount " +
+        String sql = "SELECT t.transfer_id, s.username AS sender, r.username AS receiver, tt.transfer_type_desc, ts.transfer_status_desc, t.amount " +
                 " FROM transfers t " +
                 " JOIN transfer_types tt ON t.transfer_type_id = tt.transfer_type_id " +
                 " JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id " +
@@ -60,21 +61,21 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         return transfer;
     }
     @Override
-    public int sendingMoneyTo(long userID, BigDecimal amount) {
-        Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (DEFAULT, 2, 1, ?, ?, ?);";
+    public int sendingMoneyTo(long accountFrom, long accountTo, BigDecimal amount) {
+///        Transfer account = null;
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (2, 1, ?, ?, ?);";
 
-        return jdbcTemplate.update(sql, userID, amount);
-
+        //return jdbcTemplate.update(sql, userID, amount);
+            return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
     }
     @Override
-    public int receivingMoneyFrom(long userID, BigDecimal amount) {
+    public int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount) {
         Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (DEFAULT, 1, 1, ?, ?, ?);";
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (1, 1, ?, ?, ?);";
 
-        return jdbcTemplate.update(sql, userID, amount);
+        return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
     }
     @Override
     public List<Transfer> pendingRequests(long transferID) {
@@ -92,6 +93,14 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
             requests.add(getAllPendingRequests);
         }
         return requests;
+    }
+    @Override
+    public boolean updatePendingRequests(int option) {
+
+        String sql = "UPDATE transfers " +
+                "SET transfer_status_id = ? " +
+                "WHERE transfer_id = ?;"; // how do we tie this part with selected transferID from pendingRequests
+        return jdbcTemplate.update(sql, option) == 1;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
