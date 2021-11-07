@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import io.cucumber.java.bs.A;
 import org.springframework.http.*;
 import org.springframework.web.client.*;
 
@@ -18,19 +19,19 @@ import java.math.BigDecimal;
 public class AccountService {
 
     private final String API_BASE_URL;
-    private final AuthenticatedUser console;
+    private final Account console;
     private RestTemplate restTemplate = new RestTemplate();
     private String authToken = null;
 
-    public AccountService(String apiURL, AuthenticatedUser consoleService) {
+    public AccountService(String apiURL, Account consoleService) {
         API_BASE_URL = apiURL;
         this.console = consoleService;
     }
 
-    public Account getAccountById(long accountId) {
+    public Account getAccountById() {
         Account account = null;
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/accounts/" + accountId, HttpMethod.GET
+            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/accounts/" + console.getAccountID(), HttpMethod.GET
             , makeAuthEntity(), Account.class);
             account = response.getBody();
            // account = restTemplate.getForObject(API_BASE_URL + "/accounts/" + accountId, Account.class);
@@ -45,8 +46,8 @@ public class AccountService {
     public BigDecimal getBalance() {
         BigDecimal balance = new BigDecimal(0);
         try {
-            balance = restTemplate.exchange(API_BASE_URL + "/accounts/balance/" + console.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
-            System.out.println("Your current account balance is: $" + balance);
+            balance = restTemplate.exchange(API_BASE_URL + "/accounts/balance/" + console.getAccountID(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+           // System.out.println("Your current account balance is: $" + balance);
         } catch (RestClientException e) {
             System.out.println("Error getting balance");
         }
@@ -103,6 +104,11 @@ public class AccountService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
+    }
+
+
+
+    public void printErrorMessage() {
     }
 }
 

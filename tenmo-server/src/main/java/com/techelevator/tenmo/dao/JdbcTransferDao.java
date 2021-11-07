@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,8 @@ public class JdbcTransferDao implements TransferDao {
 
 
 private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private AccountDao accountDAO;
 
 public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
@@ -60,22 +63,23 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         return transfer;
     }
     @Override
-    public int sendingMoneyTo(long userID, BigDecimal amount) {
-        Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (DEFAULT, 2, 1, ?, ?, ?);";
+    public int sendingMoneyTo(long accountFrom, long accountTo, BigDecimal amount) {
+///        Transfer account = null;
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (2, 1, ?, ?, ?);";
 
-        return jdbcTemplate.update(sql, userID, amount);
-
+        //return jdbcTemplate.update(sql, userID, amount);
+        return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
     }
     @Override
-    public int receivingMoneyFrom(long userID, BigDecimal amount) {
+    public int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount) {
         Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (DEFAULT, 1, 1, ?, ?, ?);";
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (1, 1, ?, ?, ?);";
 
-     return jdbcTemplate.update(sql, userID, amount);
+        return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
     }
+
     @Override
     public List<Transfer> pendingRequests(long transferID) {
         List<Transfer> requests = new ArrayList<>();

@@ -24,35 +24,37 @@ public class TransferController {
         this.transferDao = transferDao;
     }
 
-    @RequestMapping( path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
     public List<Transfer> lists(@PathVariable int id) {
         List<Transfer> results = transferDao.getAllTransfers(id);
 
         return results;
     }
 
-    @RequestMapping( path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
     public Transfer getTransfer(@PathVariable int id) {
         Transfer transfer = transferDao.getTransferById(id);
         return transfer;
     }
 
 
-    @RequestMapping( path = "/transfers/sending/{id}", method = RequestMethod.PUT)
-    public int update(@PathVariable long id, @RequestBody BigDecimal amount){
-        return transferDao.sendingMoneyTo(id, amount);
+    @RequestMapping(path = "/transfers/sending/{id}", method = RequestMethod.PUT)
+    public void update(@RequestBody Transfer transfer) {
+        // return transferDao.sendingMoneyTo(id, amount);
+        transferDao.sendingMoneyTo(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
     }
 
-    @RequestMapping( path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
-    public int update2(@PathVariable long id, @RequestBody BigDecimal amount){
-        return transferDao.receivingMoneyFrom(id, amount);
+    @RequestMapping(path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
+    public int update2(@PathVariable long accountFrom, @PathVariable long accountTo, @RequestBody BigDecimal amount) {
+        return transferDao.receivingMoneyFrom(accountFrom, accountTo, amount);
     }
 
-    @RequestMapping( path = "/transfers/pending/{id}", method = RequestMethod.GET)
-    public List<Transfer> list (@PathVariable long id) {
-        List<Transfer> results = transferDao.pendingRequests(id);
+//    @RequestMapping( path = "/transfers/pending/{id}", method = RequestMethod.GET)
+//    public List<Transfer> list (@PathVariable long id) {
+//        List<Transfer> results = transferDao.pendingRequests(id);
+//
+//        return results;
+//    }
 
-        return results;
     }
 
-}
