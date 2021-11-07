@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,14 +41,15 @@ import java.math.BigDecimal;
         }
         //  BigDecimal increaseBalance(BigDecimal addMoney, long accountID);
         @RequestMapping(path = "/accounts/balance/increase/{id}", method = RequestMethod.PUT)
-        public BigDecimal update(@RequestBody BigDecimal addMoney, @PathVariable int id) {
-            return accountDao.increaseBalance(addMoney, id);
+        public BigDecimal update(@RequestBody BigDecimal balance, @PathVariable long id) {
+            return accountDao.increaseBalance(balance, id);
         }
         //   BigDecimal decreaseBalance(BigDecimal subtractMoney,long accountID);
         @RequestMapping(path = "/accounts/balance/decrease/{id}", method = RequestMethod.PUT)
         public BigDecimal update2(@RequestBody BigDecimal subtractMoney, @PathVariable int id) {
             return accountDao.decreaseBalance(subtractMoney, id);
         }
+
     }
 
 

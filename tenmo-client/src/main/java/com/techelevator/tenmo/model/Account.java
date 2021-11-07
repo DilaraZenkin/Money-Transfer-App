@@ -48,4 +48,7 @@ public class Account {
                 ", balance=" + balance +
                 '}';
     }
+
+    public void printError(String s) {
+    }
 }
