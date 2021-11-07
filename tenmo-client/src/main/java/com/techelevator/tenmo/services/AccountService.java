@@ -17,14 +17,19 @@ import java.math.BigDecimal;
 
 public class AccountService {
 
-    private final String API_BASE_URL;
-    private final Account console;
+    private final String API_BASE_URL = "localhost:8080";
+//    private final Account console;
     private RestTemplate restTemplate = new RestTemplate();
     private String authToken = null;
 
-    public AccountService(String apiURL, Account console) {
-        API_BASE_URL = apiURL;
-        this.console = console;
+
+//    public AccountService(String apiURL, Account console) {
+//        API_BASE_URL = apiURL;
+////        this.console = console;
+//    }
+
+
+    public AccountService() {
     }
 
     public Account getAccountById(long accountId) {
@@ -35,9 +40,9 @@ public class AccountService {
             account = response.getBody();
             // account = restTemplate.getForObject(API_BASE_URL + "/accounts/" + accountId, Account.class);
         } catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+            System.out.println("Error");
         } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
+            System.out.println("Error also");
         }
         return account;
     }
@@ -73,9 +78,9 @@ public class AccountService {
             restTemplate.put(url, makeEntity(account));
             success = true;
         } catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+            System.out.println("Error");
         } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
+            System.out.println("Error also");
         }
         return success;
     }
@@ -88,9 +93,9 @@ public class AccountService {
             restTemplate.put(url, makeEntity(account));
             success = true;
         } catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+            System.out.println("Error");
         } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
+            System.out.println("Error also");
         }
         return success;
     }
