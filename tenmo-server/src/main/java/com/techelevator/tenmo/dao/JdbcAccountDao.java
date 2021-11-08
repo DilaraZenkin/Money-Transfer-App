@@ -3,11 +3,15 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class JdbcAccountDao implements AccountDao {
 
@@ -17,32 +21,43 @@ public class JdbcAccountDao implements AccountDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
-    public Account getAccountById(long accountId) {
-        Account account = null;
-        String sql = "SELECT * FROM accounts " + "WHERE account_id = ?;";
+    public List<Account> getAccountsByUserId(long userID) {
+        List<Account> accounts = new ArrayList<>();
+        String sql = "SELECT * FROM accounts " +
+                "WHERE user_id = ?;";
 
 
-        SqlRowSet results = null;
-        results = jdbcTemplate.queryForRowSet(sql, accountId);
-        if (results.next()) {
-            account = mapRowToAccount(results);
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userID);
+        while (results.next()) {
+            accounts.add(mapRowToAccount(results));
         }
-
-        return account;
-
+        return accounts;
     }
 
     @Override
-    public BigDecimal getBalance(long accountID) {
+    public Account getAccountById(long accountId) {
+        String sql = "SELECT * FROM accounts " +
+                "WHERE account_id = ?;";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+
+        Account account = null;
+        if(results.next()) {
+            account = mapRowToAccount(results);
+        }
+        return account;
+    }
+
+    @Override
+    public BigDecimal getBalance(long userID) {
         BigDecimal balance = null;
         String sql = "SELECT balance " +
                 "FROM accounts " +
-                "WHERE account_id = ?;";
+                "WHERE user_id = ?;";
 
         SqlRowSet results = null;
-        results = jdbcTemplate.queryForRowSet(sql, accountID);
+        results = jdbcTemplate.queryForRowSet(sql, userID);
         if (results.next()) {
             balance = results.getBigDecimal("balance");
         }

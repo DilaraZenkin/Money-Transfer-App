@@ -1,8 +1,10 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,24 +15,35 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 
 
-
-    @RestController
+@RestController
     @PreAuthorize("permitAll")
     public class AccountController {
 
 
         private AccountDao accountDao;
+        private UserDao userDao;
 
-        public AccountController(AccountDao accountDao) {
+        public AccountController(AccountDao accountDao, UserDao userDao) {
             this.accountDao = accountDao;
+            this.userDao = userDao;
+        }
+        @RequestMapping(path = "/accounts/{id}/owner", method = RequestMethod.GET)
+        public User getUserByAccountId(@PathVariable int id) {
+            return userDao.getUserByAccountId(id);
+        }
+
+        @RequestMapping(path = "/accounts/by-user/{userId}", method = RequestMethod.GET)
+        public List<Account> getAccountsByUserId(@PathVariable int userId) {
+            return accountDao.getAccountsByUserId(userId);
         }
 
         @RequestMapping( path = "/accounts/{id}", method = RequestMethod.GET)
         public Account getAccountByID(@PathVariable int id) {
-            Account account = accountDao.getAccountById(id);
-            return account;
+            return accountDao.getAccountById(id);
+
         }
 
         //    BigDecimal getBalance(long accountID);

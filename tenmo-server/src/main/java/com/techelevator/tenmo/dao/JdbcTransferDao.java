@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,10 @@ import java.util.List;
 @Component
 public class JdbcTransferDao implements TransferDao {
 
-
+@Autowired
 private JdbcTemplate jdbcTemplate;
+@Autowired
+private AccountDao accountDao;
 
 public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
@@ -23,14 +26,23 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
 
 
     @Override
-    public List<Transfer> getAllTransfers(long accountID) {
+    public List<Transfer> getAllTransfers(long userID) {
     List<Transfer> transferList = new ArrayList<>();
-    String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
-            "FROM transfers " +
-            "JOIN accounts ON transfers.account_from = accounts.account_id " +
-            "WHERE account_to = account_id OR account_from = account_id;";
+//    String sql = "SELECT *, r.username AS senderFrom, s.username AS receiverTo FROM transfers " +
+//            "JOIN accounts a ON transfers.account_from = a.account_id  " +
+//            "JOIN accounts ac ON transfers.account_to = ac.account_id  " +
+//            "JOIN users r ON a.user_id = r.user_id  " +
+//            "JOIN users s ON ac.user_id = s.user_id " +
+//            "WHERE a.user_id = ? OR ac.user_id = ?;";
 
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        String sql = "SELECT t.*, u.username AS userFrom, v.username AS userTo FROM transfers t " +
+                "JOIN accounts a ON t.account_from = a.account_id " +
+                "JOIN accounts b ON t.account_to = b.account_id " +
+                "JOIN users u ON a.user_id = u.user_id " +
+                "JOIN users v ON b.user_id = v.user_id " +
+                "WHERE a.user_id = ? OR b.user_id = ?";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userID, userID);
         while (results.next()) {
             Transfer getAllTransfers = mapRowToTransfer(results);
             transferList.add(getAllTransfers);
@@ -111,6 +123,14 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         transfer.setAccountFrom(rowSet.getLong("account_from"));
         transfer.setAccountTo(rowSet.getLong("account_to"));
         transfer.setAmount(rowSet.getBigDecimal("amount"));
+        try {
+            transfer.setAccountFroms(rowSet.getString("accountFroms"));
+            transfer.setAccountTos(rowSet.getString("accountTos"));
+        } catch (Exception e) {}
+        try {
+            transfer.setTransferTypeId(rowSet.getString("transferTypeId"));
+            transfer.setTransferStatusId(rowSet.getString("transferStatusId"));
+        } catch (Exception e) {}
         return transfer;
     }
 }
