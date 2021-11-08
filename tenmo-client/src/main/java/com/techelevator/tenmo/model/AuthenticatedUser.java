@@ -18,11 +18,10 @@ public class AuthenticatedUser {
 		this.user = user;
 	}
 
-<<<<<<< HEAD
+
 	public void printError(String s) {
 	}
-=======
-    public void printError(String s) {
-    }
->>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
+
+
+
 }

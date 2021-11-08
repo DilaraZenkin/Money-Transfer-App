@@ -1,13 +1,21 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
+import io.cucumber.java.en_old.Ac;
+import org.springframework.http.HttpMethod;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
 
 public class App {
 
@@ -25,20 +33,20 @@ public class App {
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
 
-	private AuthenticatedUser currentUser;
-	private ConsoleService console;
-	private AuthenticationService authenticationService;
-	private AccountService accountService;
 
-	public static void main(String[] args) {
-		App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new AccountService(API_BASE_URL, accountUser));
-		app.run();
-	}
+    private AuthenticatedUser currentUser;
+    private ConsoleService console;
+    private AuthenticationService authenticationService;
 
-	public App(ConsoleService console, AuthenticationService authenticationService) {
+
+    public static void main(String[] args) {
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+    	app.run();
+    }
+
+    public App(ConsoleService console, AuthenticationService authenticationService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
-		this.accountService;
 	}
 
 	public void run() {
@@ -74,18 +82,82 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-		BigDecimal balance = accountService.getBalance();
-		if(balance != null) {
-			System.out.println("Your current account balance is: $" + balance);
-		} else {
-			accountService.printErrorMessage();
+		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+		try {
+			accountService.getBalance();
+		} catch (NullPointerException e) {
+			System.out.println("Could not find a balance");
+
 		}
 	}
 
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		AccountService accountsService = new AccountService(API_BASE_URL, currentUser);
+		Account[] accounts = accountsService.getAccountsByUserId(currentUser.getUser().getId());
+		Set<Long> accountIds = new HashSet<>();
+		for (Account account : accounts) {
+			accountIds.add(account.getAccountID());
+		}
 
+		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+		Transfer[] transfers = transferService.getAllTransfers();
+
+
+
+		try {
+			System.out.println("-------------------------------------------\r\n" +
+					"Transfer\r\n" +
+					"ID            From/To        Amount\r\n" +
+					"-------------------------------------------\r\n");
+
+
+			for (Transfer i : transfers) {
+				String name = "";
+
+				String fromOrTo = "";
+				if (accountIds.contains(i.getAccountFrom())) {
+					name = accountsService.getUserByAccountId(i.getAccountTo()).getUsername();
+					fromOrTo = "To: ";
+
+				} else if(accountIds.contains(i.getAccountTo())){
+					name = accountsService.getUserByAccountId(i.getAccountFrom()).getUsername();
+					fromOrTo = "From: ";
+
+				} // todo will need to add an exception handling
+
+				System.out.println(i.getTransferID() +"\t\t" + fromOrTo + name + "\t\t$" + i.getAmount());
+
+			}
+			System.out.print("-------------------------------------------\r\n" +
+					"Please enter transfer ID to view details (0 to cancel): ");
+			Scanner scanner = new Scanner(System.in);
+			String input = scanner.nextLine();
+			if (Integer.parseInt(input) != 0) {
+				boolean foundTransferId = false;
+				for (Transfer temp : transfers) {
+					if (Integer.parseInt(input) == temp.getTransferID()) {
+//						Transfer temp = restTemplate.exchange(API_BASE_URL + "/transfers/getalltransfers/" + i.getTransferID(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+						foundTransferId = true;
+						System.out.println("--------------------------------------------\r\n" +
+								"Transfer Details\r\n" +
+								"--------------------------------------------\r\n" +
+								" Id: "+ temp.getTransferID() + "\r\n" +
+								" From: " + temp.getAccountFroms() + "\r\n" +
+								" To: " + temp.getAccountTos() + "\r\n" +
+								" Type: " + temp.getTransferTypeId() + "\r\n" +
+								" Status: " + temp.getTransferStatusId() + "\r\n" +
+								" Amount: $" + temp.getAmount());
+					}
+				}
+				if (!foundTransferId) {
+					System.out.println("Not a valid transfer ID");
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Something went wrong!");
+			e.printStackTrace();
+		}
 	}
 
 	private void viewPendingRequests() {
@@ -95,12 +167,14 @@ public class App {
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-
+TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+transferService.sendBucks();
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-
+TransferService transferService = new TransferService(API_BASE_URL,currentUser);
+transferService.requestBucks();
 	}
 
 	private void exitProgram() {
