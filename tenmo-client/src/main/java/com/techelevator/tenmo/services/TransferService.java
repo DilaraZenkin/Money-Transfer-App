@@ -8,77 +8,45 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-
 public class TransferService {
     private final String API_BASE_URL;
-    private final Account console;
+    private final AuthenticatedUser console;
     private RestTemplate restTemplate = new RestTemplate();
     private String authToken = null;
 
-    public TransferService(String api_base_url, Account console) {
+    public TransferService(String api_base_url, AuthenticatedUser console) {
         API_BASE_URL = api_base_url;
         this.console = console;
     }
 
-    public Transfer[] getAllTransfers() {
+    public Transfer[] getAllTransfers(long AccountID) {
         Transfer[] transfers = null;
         try{
             transfers = restTemplate.getForObject(API_BASE_URL + "/transfers/getalltransfers/"
-            + console.getAccountID(), Transfer[].class);
+                    + AccountID, Transfer[].class);
         } catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+            //console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
         } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
+            //console.printError(ex.getMessage());
         }
         return transfers;
-        }
+    }
 
 
 
-    public  Transfer getTransferById() {
+    public  Transfer getTransferById(long transferID) {
         Transfer transfer = null;
         try{
             ResponseEntity<Transfer> response= restTemplate.exchange(API_BASE_URL +
-                    "/transfers/gettransfer/" + console.getAccountID(), HttpMethod.GET, makeAuthEntity(),
+                            "/transfers/gettransfer/" + transferID, HttpMethod.GET, makeAuthEntity(),
                     Transfer.class);
             transfer = response.getBody();
         }catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
+           // console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
         } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
+           // console.printError(ex.getMessage());
         }
         return transfer;
-    }
-
-    public boolean sendingMoneyTo(Transfer transfer) {
-        boolean success = false;
-        String url = API_BASE_URL + "/transfers/sending/" + transfer.getTransferID();
-        try {
-            restTemplate.put(url,makeEntity(transfer));
-            success = true;
-        }catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
-        } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
-        }
-        return success;
-
-    }
-
-    public boolean receivingMoneyFrom(Transfer transfer) {
-        boolean success = false;
-        String url = API_BASE_URL + "/transfers/receiving/" + transfer.getTransferID();
-        try {
-            restTemplate.put(url,makeEntity(transfer));
-            success = true;
-        }catch (RestClientResponseException ex) {
-            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
-        } catch (ResourceAccessException ex) {
-            console.printError(ex.getMessage());
-        }
-        return success;
-
     }
 
 

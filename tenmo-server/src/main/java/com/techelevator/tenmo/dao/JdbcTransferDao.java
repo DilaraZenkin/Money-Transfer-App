@@ -28,8 +28,9 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     @Override
     public List<Transfer> getAllTransfers(long accountID) {
     List<Transfer> transferList = new ArrayList<>();
-    String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount "
-            + "FROM transfers " + "JOIN accounts ON transfers.account_from = accounts.account.id " +
+    String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+            "FROM transfers " +
+            "JOIN accounts ON transfers.account_from = accounts.account_id " +
             "WHERE account_to = account_id OR account_from = account_id;";
 
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
@@ -44,7 +45,7 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
     public Transfer getTransferById(long transferID) {
 
         Transfer transfer = null;
-        String sql = " SELECT t.transfer_id, s.username AS sender, r.username AS receiver, tt.transfer_type_desc, ts.transfer_status_desc, t.amount " +
+        String sql = "SELECT t.transfer_id, s.username AS sender, r.username AS receiver, tt.transfer_type_desc, ts.transfer_status_desc, t.amount " +
                 " FROM transfers t " +
                 " JOIN transfer_types tt ON t.transfer_type_id = tt.transfer_type_id " +
                 " JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id " +
@@ -69,7 +70,11 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
                 "VALUES (2, 1, ?, ?, ?);";
 
         //return jdbcTemplate.update(sql, userID, amount);
+<<<<<<< HEAD
         return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+=======
+            return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+>>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
     }
     @Override
     public int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount) {
@@ -96,6 +101,14 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
             requests.add(getAllPendingRequests);
         }
         return requests;
+    }
+    @Override
+    public boolean updatePendingRequests(int option) {
+
+        String sql = "UPDATE transfers " +
+                "SET transfer_status_id = ? " +
+                "WHERE transfer_id = ?;"; // how do we tie this part with selected transferID from pendingRequests
+        return jdbcTemplate.update(sql, option) == 1;
     }
 
 //    @Override

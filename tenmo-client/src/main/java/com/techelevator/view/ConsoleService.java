@@ -73,7 +73,13 @@ public class ConsoleService {
 		} while(result == null);
 		return result;
 	}
+<<<<<<< HEAD
 
     public void printError(String s) {
     }
+=======
+	public void printError(String errorMessage) {
+		System.err.println(errorMessage);
+	}
+>>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
 }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
 public class TransferController {
 
     @Autowired
@@ -23,21 +22,32 @@ public class TransferController {
     public TransferController(TransferDao transferDao) {
         this.transferDao = transferDao;
     }
+<<<<<<< HEAD
 
     @RequestMapping(path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
+=======
+    // works in Postman
+    @RequestMapping( path = "/transfers/getalltransfers/{id}", method = RequestMethod.GET)
+>>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
     public List<Transfer> lists(@PathVariable int id) {
         List<Transfer> results = transferDao.getAllTransfers(id);
 
         return results;
     }
+<<<<<<< HEAD
 
     @RequestMapping(path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
+=======
+    // 200 OK in Postman but no data shown
+    @RequestMapping( path = "/transfers/gettransfer/{id}", method = RequestMethod.GET)
+>>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
     public Transfer getTransfer(@PathVariable int id) {
         Transfer transfer = transferDao.getTransferById(id);
         return transfer;
     }
 
 
+<<<<<<< HEAD
     @RequestMapping(path = "/transfers/sending/{id}", method = RequestMethod.PUT)
     public void update(@RequestBody Transfer transfer) {
         // return transferDao.sendingMoneyTo(id, amount);
@@ -47,6 +57,17 @@ public class TransferController {
     @RequestMapping(path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
     public int update2(@PathVariable long accountFrom, @PathVariable long accountTo, @RequestBody BigDecimal amount) {
         return transferDao.receivingMoneyFrom(accountFrom, accountTo, amount);
+=======
+    @RequestMapping( path = "/transfers/sending/{id}", method = RequestMethod.PUT)
+    public void update(@RequestBody Transfer transfer){
+       // return transferDao.sendingMoneyTo(id, amount);
+        transferDao.sendingMoneyTo(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+    }
+
+    @RequestMapping( path = "/transfers/receiving/{id}", method = RequestMethod.PUT)
+    public void update2(@RequestBody Transfer transfer){
+        transferDao.receivingMoneyFrom(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+>>>>>>> a6c2732a1ae22e0daf50a218f0f0e560245f4a22
     }
 
 //    @RequestMapping( path = "/transfers/pending/{id}", method = RequestMethod.GET)
