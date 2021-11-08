@@ -10,6 +10,12 @@ public class Transfer {
     private long accountFrom;
     private long accountTo;
     private BigDecimal amount;
+    private String transferId;
+    private String transferTypeId;
+    private String transferStatusId;
+    private String accountFroms;
+    private String accountTos;
+
 
     public Transfer(long transferID, long transferTypeID, long transferStatusID, long accountFrom, long accountTo, BigDecimal amount) {
         this.transferID = transferID;
@@ -71,6 +77,46 @@ public class Transfer {
         this.amount = amount;
     }
 
+    public String getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(String transferId) {
+        this.transferId = transferId;
+    }
+
+    public String getTransferTypeId() {
+        return transferTypeId;
+    }
+
+    public void setTransferTypeId(String transferTypeId) {
+        this.transferTypeId = transferTypeId;
+    }
+
+    public String getTransferStatusId() {
+        return transferStatusId;
+    }
+
+    public void setTransferStatusId(String transferStatusId) {
+        this.transferStatusId = transferStatusId;
+    }
+
+    public String getAccountFroms() {
+        return accountFroms;
+    }
+
+    public void setAccountFroms(String accountFroms) {
+        this.accountFroms = accountFroms;
+    }
+
+    public String getAccountTos() {
+        return accountTos;
+    }
+
+    public void setAccountTos(String accountTos) {
+        this.accountTos = accountTos;
+    }
+
     @Override
     public String toString() {
         return "Transfer{" +
@@ -80,6 +126,11 @@ public class Transfer {
                 ", accountFrom=" + accountFrom +
                 ", accountTo=" + accountTo +
                 ", amount=" + amount +
+                ", transferId='" + transferId + '\'' +
+                ", transferTypeId='" + transferTypeId + '\'' +
+                ", transferStatusId='" + transferStatusId + '\'' +
+                ", accountFroms='" + accountFroms + '\'' +
+                ", accountTos='" + accountTos + '\'' +
                 '}';
     }
 }

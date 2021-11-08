@@ -9,7 +9,7 @@ import java.util.List;
 public interface TransferDao {
 
     // (Corresponds to 5 in README -- can see transfers sent or received)
-    List<Transfer> getAllTransfers(long accountID);
+    List<Transfer> getAllTransfers(long userID);
 
     // (Corresponds to 6 in README -- retrieve details on any transfer with transferID)
     Transfer getTransferById(long transferID);

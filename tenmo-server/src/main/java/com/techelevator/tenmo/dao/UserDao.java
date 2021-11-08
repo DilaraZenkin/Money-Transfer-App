@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.User;
 import java.util.List;
 
 public interface UserDao {
+    User getUserByAccountId(long accountId);
 
     List<User> findAll();
 

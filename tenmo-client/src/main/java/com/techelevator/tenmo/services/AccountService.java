@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.User;
 import org.springframework.http.*;
 import org.springframework.web.client.*;
 
@@ -17,40 +18,32 @@ import java.math.BigDecimal;
 
 public class AccountService {
 
-    private final String API_BASE_URL = "localhost:8080";
-//    private final Account console;
+    private  String API_BASE_URL;
     private RestTemplate restTemplate = new RestTemplate();
-    private String authToken = null;
+    private AuthenticatedUser currentUser;
 
 
-//    public AccountService(String apiURL, Account console) {
-//        API_BASE_URL = apiURL;
-////        this.console = console;
-//    }
 
-
-    public AccountService() {
+    public AccountService(String apiURL, AuthenticatedUser currentUser) {
+        API_BASE_URL = apiURL;
+        this.currentUser = currentUser;
+    }
+    public User getUserByAccountId(long accountId) {
+        return restTemplate.exchange(API_BASE_URL + "/accounts/" + accountId + "/owner", HttpMethod.GET, makeAuthEntity(), User.class).getBody();
     }
 
-    public Account getAccountById(long accountId) {
-        Account account = null;
-        try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/accounts/" + accountId, HttpMethod.GET
-                    , makeAuthEntity(), Account.class);
-            account = response.getBody();
-            // account = restTemplate.getForObject(API_BASE_URL + "/accounts/" + accountId, Account.class);
-        } catch (RestClientResponseException ex) {
-            System.out.println("Error");
-        } catch (ResourceAccessException ex) {
-            System.out.println("Error also");
-        }
-        return account;
+    public Account[] getAccountsByUserId(long userID) {
+        Account[] accounts = null;
+
+            accounts = restTemplate.exchange(API_BASE_URL + "/accounts/by-user/" + userID, HttpMethod.GET, makeAuthEntity(), Account[].class).getBody();
+
+        return accounts;
     }
 
     public BigDecimal getBalance() {
-        BigDecimal balance = null;
+        BigDecimal balance = new BigDecimal(0);
         try {
-            balance = restTemplate.exchange(API_BASE_URL + "/accounts/balance/" + console.getAccountID(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+            balance = restTemplate.exchange(API_BASE_URL + "/accounts/balance/" + currentUser.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
             System.out.println("Your current account balance is: $" + balance);
         } catch (RestClientException e) {
             System.out.println("Error getting balance");
@@ -58,19 +51,6 @@ public class AccountService {
         return balance;
     }
 
-    //    public Account getBalance(long accountID) {
-//        Account account = null;
-//        BigDecimal balance = new BigDecimal(0);
-//        try {
-//            account = restTemplate.getForObject(API_BASE_URL + "/accounts/balance/" + accountID, Account.class);
-//            System.out.println("Your current account balance is: $" + balance);
-//        } catch (RestClientResponseException ex) {
-//            console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
-//        } catch (ResourceAccessException ex) {
-//            console.printError(ex.getMessage());
-//        }
-//        return account;
-//    }
     public boolean increaseBalance(Account account) {
         boolean success = false;
         String url = API_BASE_URL + "/accounts/balance/increase" + account.getAccountID();
@@ -95,7 +75,7 @@ public class AccountService {
         } catch (RestClientResponseException ex) {
             System.out.println("Error");
         } catch (ResourceAccessException ex) {
-            System.out.println("Error also");
+            System.out.println("Error Also");
         }
         return success;
     }
@@ -106,11 +86,8 @@ public class AccountService {
     }
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
+        headers.setBearerAuth(currentUser.getToken());
         return new HttpEntity<>(headers);
-    }
-
-    public void printErrorMessage() {
     }
 }
 
