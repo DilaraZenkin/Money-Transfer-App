@@ -19,10 +19,10 @@ import java.util.Set;
 
 public class App {
 
-private static final String API_BASE_URL = "http://localhost:8080";
-    
-    private static final String MENU_OPTION_EXIT = "Exit";
-    private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
+	private static final String API_BASE_URL = "http://localhost:8080";
+
+	private static final String MENU_OPTION_EXIT = "Exit";
+	private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
 	private static final String LOGIN_MENU_OPTION_LOGIN = "Login";
 	private static final String[] LOGIN_MENU_OPTIONS = { LOGIN_MENU_OPTION_REGISTER, LOGIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
 	private static final String MAIN_MENU_OPTION_VIEW_BALANCE = "View your current balance";
@@ -53,7 +53,7 @@ private static final String API_BASE_URL = "http://localhost:8080";
 		System.out.println("*********************");
 		System.out.println("* Welcome to TEnmo! *");
 		System.out.println("*********************");
-		
+
 		registerAndLogin();
 		mainMenu();
 	}
@@ -162,19 +162,21 @@ private static final String API_BASE_URL = "http://localhost:8080";
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+transferService.sendBucks();
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+TransferService transferService = new TransferService(API_BASE_URL,currentUser);
+transferService.requestBucks();
 	}
-	
+
 	private void exitProgram() {
 		System.exit(0);
 	}
@@ -200,18 +202,18 @@ private static final String API_BASE_URL = "http://localhost:8080";
 	private void register() {
 		System.out.println("Please register a new user account");
 		boolean isRegistered = false;
-        while (!isRegistered) //will keep looping until user is registered
-        {
-            UserCredentials credentials = collectUserCredentials();
-            try {
-            	authenticationService.register(credentials);
-            	isRegistered = true;
-            	System.out.println("Registration successful. You can now login.");
-            } catch(AuthenticationServiceException e) {
-            	System.out.println("REGISTRATION ERROR: "+e.getMessage());
+		while (!isRegistered) //will keep looping until user is registered
+		{
+			UserCredentials credentials = collectUserCredentials();
+			try {
+				authenticationService.register(credentials);
+				isRegistered = true;
+				System.out.println("Registration successful. You can now login.");
+			} catch(AuthenticationServiceException e) {
+				System.out.println("REGISTRATION ERROR: "+e.getMessage());
 				System.out.println("Please attempt to register again.");
-            }
-        }
+			}
+		}
 	}
 
 	private void login() {
@@ -220,7 +222,7 @@ private static final String API_BASE_URL = "http://localhost:8080";
 		while (currentUser == null) //will keep looping until user is logged in
 		{
 			UserCredentials credentials = collectUserCredentials();
-		    try {
+			try {
 				currentUser = authenticationService.login(credentials);
 			} catch (AuthenticationServiceException e) {
 				System.out.println("LOGIN ERROR: "+e.getMessage());
@@ -228,7 +230,7 @@ private static final String API_BASE_URL = "http://localhost:8080";
 			}
 		}
 	}
-	
+
 	private UserCredentials collectUserCredentials() {
 		String username = console.getUserInput("Username");
 		String password = console.getUserInput("Password");

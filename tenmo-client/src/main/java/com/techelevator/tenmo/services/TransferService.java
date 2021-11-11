@@ -80,13 +80,47 @@ public class TransferService {
                 } catch (NumberFormatException e) {
                     System.out.println("Error when entering amount");
                 }
-                String output = restTemplate.exchange(API_BASE_URL + "transfer", HttpMethod.POST, makeTransferEntity(transfer), String.class).getBody();
+                String output = restTemplate.exchange(API_BASE_URL + "/transfers/sending/", HttpMethod.POST, makeTransferEntity(transfer), String.class).getBody();
                 System.out.println(output);
             }
         } catch (Exception e) {
             System.out.println("Bad input.");
         }
     }
+        public void requestBucks() {
+            User[] users = null;
+            Transfer transfer = new Transfer();
+            try {
+                Scanner scanner = new Scanner(System.in);
+                users = restTemplate.exchange(API_BASE_URL + "listusers", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
+                System.out.println("-------------------------------------------\r\n" +
+                        "Users\r\n" +
+                        "ID\t\tName\r\n" +
+                        "-------------------------------------------");
+                for (User i : users) {
+                    if (i.getId() != currentUser.getUser().getId()) {
+                        System.out.println(i.getId() + "\t\t" + i.getUsername());
+                    }
+                }
+                System.out.print("-------------------------------------------\r\n" +
+                        "Enter ID of user you are requesting from (0 to cancel): ");
+                transfer.setAccountTo(currentUser.getUser().getId());
+                transfer.setAccountFrom(Integer.parseInt(scanner.nextLine()));
+                if (transfer.getAccountTo() != 0) {
+                    System.out.print("Enter amount: ");
+                    try {
+                        transfer.setAmount(new BigDecimal(Double.parseDouble(scanner.nextLine())));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error when entering amount");
+                    }
+                    String output = restTemplate.exchange(API_BASE_URL + "/transfers/receiving/", HttpMethod.POST, makeTransferEntity(transfer), String.class).getBody();
+                    System.out.println(output);
+                }
+            } catch (Exception e) {
+                System.out.println("Bad input.");
+            }
+        }
+
 
 
     private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {

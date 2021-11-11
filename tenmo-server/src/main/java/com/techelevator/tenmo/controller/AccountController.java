@@ -3,6 +3,8 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
+
+
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import java.util.List;
             this.accountDao = accountDao;
             this.userDao = userDao;
         }
+
         @RequestMapping(path = "/accounts/{id}/owner", method = RequestMethod.GET)
         public User getUserByAccountId(@PathVariable int id) {
             return userDao.getUserByAccountId(id);
@@ -46,23 +49,31 @@ import java.util.List;
 
         }
 
-        //    BigDecimal getBalance(long accountID);
-        @RequestMapping( path = "/accounts/balance/{id}", method = RequestMethod.GET)
-        public BigDecimal getBalance(@PathVariable int id) {
-            BigDecimal balance = accountDao.getBalance(id);
-            return balance;
-        }
-        //  BigDecimal increaseBalance(BigDecimal addMoney, long accountID);
-        @RequestMapping(path = "/accounts/balance/increase/{id}", method = RequestMethod.PUT)
-        public BigDecimal update(@RequestBody BigDecimal balance, @PathVariable long id) {
-            return accountDao.increaseBalance(balance, id);
-        }
-        //   BigDecimal decreaseBalance(BigDecimal subtractMoney,long accountID);
-        @RequestMapping(path = "/accounts/balance/decrease/{id}", method = RequestMethod.PUT)
-        public BigDecimal update2(@RequestBody BigDecimal subtractMoney, @PathVariable int id) {
-            return accountDao.decreaseBalance(subtractMoney, id);
-        }
 
+            //    BigDecimal getBalance(long accountID);
+            @RequestMapping(path = "/accounts/balance/{id}", method = RequestMethod.GET)
+            public BigDecimal getBalance ( @PathVariable int id){
+                BigDecimal balance = accountDao.getBalance(id);
+                return balance;
+            }
+            //  BigDecimal increaseBalance(BigDecimal addMoney, long accountID);
+            @RequestMapping(path = "/accounts/balance/increase/{id}", method = RequestMethod.PUT)
+
+            public BigDecimal update (@RequestBody BigDecimal addMoney,@PathVariable int id) {
+                return accountDao.increaseBalance(addMoney, id);
+            }
+
+    @RequestMapping(path = "/accounts/balance/decrease/{id}", method = RequestMethod.PUT)
+    public BigDecimal update2 (@RequestBody BigDecimal subtractMoney,@PathVariable int id){
+        return accountDao.decreaseBalance(subtractMoney, id);
     }
+    @RequestMapping(path = "listusers", method = RequestMethod.GET)
+    public List <User> listUsers() {
+        List <User> users = userDao.findAll();
+        return users;
+    }
+
+            }
+
 
 

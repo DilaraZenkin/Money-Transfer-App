@@ -73,22 +73,48 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         return transfer;
     }
     @Override
-    public int sendingMoneyTo(long accountFrom, long accountTo, BigDecimal amount) {
+    public String sendingMoneyTo(long accountFroms, long accountTos, BigDecimal amount) {
 ///        Transfer account = null;
-        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (2, 1, ?, ?, ?);";
+//        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+//                "VALUES (2, 1, ?, ?, ?);";
+//
+//        //return jdbcTemplate.update(sql, userID, amount);
+//            return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+        if (accountFroms == accountTos) {
+            return "You can not send money to yourself.";
+        } else{
 
-        //return jdbcTemplate.update(sql, userID, amount);
-            return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
-    }
+            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    "VALUES (2, 1, ?, ?, ?)";
+            jdbcTemplate.update(sql, accountFroms, accountTos, amount);
+            accountDao.increaseBalance(amount, accountTos);
+            accountDao.decreaseBalance(amount, accountFroms);
+            return "Transfer complete";
+        }
+   }
+//    @Override
+//    public int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount) {
+//        Transfer transfer = null;
+//        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+//                "VALUES (1, 1, ?, ?, ?);";
+//
+//        return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+//    }
     @Override
-    public int receivingMoneyFrom(long accountFrom, long accountTo, BigDecimal amount) {
-        Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (1, 1, ?, ?, ?);";
-
-        return jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+    public String receivingMoneyFrom(long accountFroms, long accountTos, BigDecimal amount) {
+        if (accountFroms == accountTos) {
+            return "You can not request money from your self.";
+        }
+        if (amount.compareTo(new BigDecimal(0)) == 1) {
+            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    "VALUES (1, 1, ?, ?, ?)";
+            jdbcTemplate.update(sql, accountFroms, accountTos, amount);
+            return "Request sent";
+        } else {
+            return "There was a problem sending the request";
+        }
     }
+
     @Override
     public List<Transfer> pendingRequests(long transferID) {
         List<Transfer> requests = new ArrayList<>();
@@ -114,6 +140,16 @@ public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
                 "WHERE transfer_id = ?;"; // how do we tie this part with selected transferID from pendingRequests
         return jdbcTemplate.update(sql, option) == 1;
     }
+
+//    @Override
+//public Transfer sendingMoneyTo(long userID, BigDecimal amount) {
+//return null;
+//}
+//    @Override
+//    public Transfer receivingMoneyFrom(long userID, BigDecimal amount) {
+//return null;
+//    }
+
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
     Transfer transfer = new Transfer();

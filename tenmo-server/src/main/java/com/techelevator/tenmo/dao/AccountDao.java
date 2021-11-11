@@ -15,6 +15,6 @@ public interface AccountDao {
     Account getAccountById(long accountId);
     List<Account> getAccountsByUserId (long userID);
     BigDecimal getBalance(long userID);
-    BigDecimal increaseBalance(BigDecimal balance, long accountID);
-    BigDecimal decreaseBalance(BigDecimal subtractMoney,long accountID);
+    BigDecimal increaseBalance(BigDecimal amountToAdd, long userID);
+    BigDecimal decreaseBalance(BigDecimal subtractMoney,long userID);
 }

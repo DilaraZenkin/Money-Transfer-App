@@ -18,6 +18,10 @@ public class AuthenticatedUser {
 		this.user = user;
 	}
 
-    public void printError(String s) {
-    }
+
+	public void printError(String s) {
+	}
+
+
+
 }

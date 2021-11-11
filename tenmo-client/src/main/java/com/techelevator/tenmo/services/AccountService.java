@@ -58,9 +58,9 @@ public class AccountService {
             restTemplate.put(url, makeEntity(account));
             success = true;
         } catch (RestClientResponseException ex) {
-            System.out.println("Error");
+           // console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
         } catch (ResourceAccessException ex) {
-            System.out.println("Error also");
+           // console.printError(ex.getMessage());
         }
         return success;
     }
@@ -73,7 +73,7 @@ public class AccountService {
             restTemplate.put(url, makeEntity(account));
             success = true;
         } catch (RestClientResponseException ex) {
-            System.out.println("Error");
+           // console.printError(ex.getRawStatusCode() + " : " + ex.getStatusText());
         } catch (ResourceAccessException ex) {
             System.out.println("Error Also");
         }
@@ -90,6 +90,7 @@ public class AccountService {
         return new HttpEntity<>(headers);
     }
 }
+
 
 
 

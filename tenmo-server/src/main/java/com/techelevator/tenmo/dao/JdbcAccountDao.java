@@ -4,6 +4,7 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -65,23 +66,38 @@ public class JdbcAccountDao implements AccountDao {
         return balance;
     }
 
-    public BigDecimal increaseBalance(BigDecimal balance, long accountId) {
-        Account account = getAccountById(accountId);
-        BigDecimal newBalance = account.getBalance().add(balance);
-        String sql = "UPDATE accounts SET balance = ? "
-                + "WHERE account_id = ?;";
-        jdbcTemplate.update(sql, newBalance, accountId);
-        return account.getBalance();
+
+
+//    public BigDecimal increaseBalance(BigDecimal balance, long accountId) {
+//        Account account = getAccountById(accountId);
+//        BigDecimal newBalance = account.getBalance().add(balance);
+//        String sql = "UPDATE accounts SET balance = ? "
+//                + "WHERE account_id = ?;";
+//        jdbcTemplate.update(sql, newBalance, accountId);
+//        return account.getBalance();
+//    }
+
+public BigDecimal increaseBalance(BigDecimal amountToAdd, long userID) {
+    Account account = getAccountById(userID);
+    BigDecimal newBalance = account.getBalance().add(amountToAdd);
+    System.out.println(newBalance);
+    String sqlString = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+    try {
+        jdbcTemplate.update(sqlString, newBalance, userID);
+    } catch (DataAccessException e) {
+        System.out.println("Error accessing data");
     }
+    return account.getBalance();
+}
 
 
     @Override
-    public BigDecimal decreaseBalance(BigDecimal subtractMoney,long accountID) {
-        Account account = getAccountById(accountID);
+    public BigDecimal decreaseBalance(BigDecimal subtractMoney,long userID) {
+        Account account = getAccountById(userID);
         BigDecimal newBalance = account.getBalance().subtract(subtractMoney);
         String sql = "UPDATE accounts SET balance = ? "
-                + "WHERE account_id = ?;";
-        jdbcTemplate.update(sql, newBalance, accountID);
+                + "WHERE user_id = ?;";
+        jdbcTemplate.update(sql, newBalance, userID);
         return account.getBalance();
     }
 

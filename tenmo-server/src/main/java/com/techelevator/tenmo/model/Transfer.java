@@ -17,17 +17,22 @@ public class Transfer {
     private String accountTos;
 
 
-    public Transfer(long transferID, long transferTypeID, long transferStatusID, long accountFrom, long accountTo, BigDecimal amount) {
-        this.transferID = transferID;
-        this.transferTypeID = transferTypeID;
-        this.transferStatusID = transferStatusID;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
-    }
+//    public Transfer(long transferID, long transferTypeID, long transferStatusID, long accountFrom, long accountTo, BigDecimal amount, String transferType, String transferStatus, String userFrom, String userTo) {
+//        this.transferID = transferID;
+//        this.transferTypeID = transferTypeID;
+//        this.transferStatusID = transferStatusID;
+//        this.accountFrom = accountFrom;
+//        this.accountTo = accountTo;
+//        this.amount = amount;
+//
+//    }
 
-    public Transfer() {
-    }
+
+
+//    public Transfer() {
+//    }
+
+
 
     public long getTransferID() {
         return transferID;
